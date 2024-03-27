@@ -1,0 +1,7 @@
+train: C:/TRAVAIL/developpement/bacteria_tracker-main/train_dataset_full/images/train
+val: C:/TRAVAIL/developpement/bacteria_tracker-main/train_dataset_full/images/val
+test : C:/TRAVAIL/developpement/bacteria_tracker-main/train_dataset_full/images/test
+
+nc: 1
+
+names: ["bacteria"]
