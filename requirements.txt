@@ -1,0 +1,3 @@
+labelbox
+python-dotenv
+Pillow
