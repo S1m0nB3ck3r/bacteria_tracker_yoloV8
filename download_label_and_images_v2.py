@@ -1,10 +1,19 @@
-import labelbox as lb
-from PIL import Image, ImageDraw, ImageFont
+# Standard imports
 from urllib.request import urlopen
 import os
-from dotenv import load_dotenv
+import sys
 
-download_directory = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full"
+# External imports
+from dotenv import load_dotenv
+import labelbox as lb
+from PIL import Image, ImageDraw, ImageFont
+
+if len(sys.argv) != 2:
+    print("Usage : download_label_and_images_v2.py <download_dir>")
+    sys.exit(-1)
+
+# "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full"
+download_directory = sys.argv[1]
 
 if not os.path.exists(download_directory):
     os.mkdir(download_directory)
