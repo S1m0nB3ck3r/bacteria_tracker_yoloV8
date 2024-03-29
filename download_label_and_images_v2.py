@@ -6,7 +6,7 @@ import sys
 # External imports
 from dotenv import load_dotenv
 import labelbox as lb
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 if len(sys.argv) != 2:
     print("Usage : download_label_and_images_v2.py <download_dir>")
