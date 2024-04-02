@@ -14,27 +14,19 @@ from ultralytics import YOLO
 import wandb
 from wandb.integration.ultralytics import add_wandb_callback
 
-# start_weight_path = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\best_from_Mehran.pt"
-# output_weight_path = (
-#     "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\best_best.pt"
-# )
-# data_file = (
-#     "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\2bacteria.yaml"
-# )
-# project_path = (
-#     "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\result_train"
-# )
-
 
 def train(args):
     # Initialize a wandb run
-    wandb.init(project="object-detection-bdd")
+    log_wandb = args.wandb_project is not None and args.wand_entity is not None
+    if log_wandb:
+        wandb.init(entity=args.wandb_entity, project=args.wandb_project)
 
     # Create the model
     model = YOLO(args.start_weight_path)
 
     # Register the wandb callback
-    add_wandb_callback(model, enable_model_checkpointing=True)
+    if log_wandb:
+        add_wandb_callback(model, enable_model_checkpointing=True)
 
     cur_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     projet_name = f"BacteriaYoloV8_{cur_datetime}"
@@ -83,6 +75,8 @@ if __name__ == "__main__":
     )
     parser.add_argument("--max_det", type=int, default=2000)
     parser.add_argument("--device", type=int, default=0)  # 0 : GPU
+    parser.add_argument("--wandb_entity", type=str, default=None)  # 0 : GPU
+    parser.add_argument("--wandb_project", type=str, default=None)  # 0 : GPU
     args = parser.parse_args()
 
     if not os.path.exists(args.project_path):
