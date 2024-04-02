@@ -1,3 +1,4 @@
 labelbox
 python-dotenv
 Pillow
+ultralytics
