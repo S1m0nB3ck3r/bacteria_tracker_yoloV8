@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
-from sklearn.model_selection import train_test_split
+# Standard imports
+import argparse
 import shutil
 import os
 import sys
+
+# External imports
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 
 def is_image(f):
@@ -23,7 +28,7 @@ def is_labelled_image(folder, f):
     return (f, f, False)
 
 
-def splitds(sourcedir, destdir):
+def splitds(sourcedir, destdir, seed):
     list_files = [is_labelled_image(sourcedir, f) for f in os.listdir(sourcedir)]
     print("Detected %d files" % len(list_files))
     list_files = [(f, t) for (f, t, ok) in list_files if ok]
@@ -31,10 +36,10 @@ def splitds(sourcedir, destdir):
     list_X = [f for (f, t) in list_files]
     list_Y = [t for (f, t) in list_files]
     X_tv, X_test, Y_tv, Y_test = train_test_split(
-        list_X, list_Y, test_size=0.2, random_state=42
+        list_X, list_Y, test_size=0.2, random_state=seed
     )
     X_train, X_val, Y_train, Y_val = train_test_split(
-        X_tv, Y_tv, test_size=0.2, random_state=42
+        X_tv, Y_tv, test_size=0.2, random_state=seed
     )
     os.makedirs(os.path.join(destdir, "images", "train"), exist_ok=True)
     os.makedirs(os.path.join(destdir, "images", "val"), exist_ok=True)
@@ -59,11 +64,15 @@ def splitds(sourcedir, destdir):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
-        print("Usage: %s <source_dir> <dest_dir>" % sys.argv[0])
-        sys.exit(-1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source_dir", type=str, help="Path to the source directory")
+    parser.add_argument(
+        "--dest_dir", type=str, help="Path to the destination directory"
+    )
+    parser.add_argument("--seed", type=int, default=42)
+    args = parser.parse_args()
 
-    path_in = sys.argv[1]
-    path_out = sys.argv[2]
+    path_in = args.source_dir
+    path_out = args.dest_dir
 
-    splitds(path_in, path_out)
+    splitds(path_in, path_out, args.seed)
