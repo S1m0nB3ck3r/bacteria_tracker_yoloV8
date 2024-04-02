@@ -59,7 +59,11 @@ def splitds(sourcedir, destdir):
 
 if __name__ == "__main__":
 
-    path_in = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full_filtered\\sub256"
-    path_out = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full_filtered\\train_dataset_full_filtered"
+    if len(sys.argv) != 3:
+        print("Usage: %s <source_dir> <dest_dir>" % sys.argv[0])
+        sys.exit(-1)
+
+    path_in = sys.argv[1]
+    path_out = sys.argv[2]
 
     splitds(path_in, path_out)
