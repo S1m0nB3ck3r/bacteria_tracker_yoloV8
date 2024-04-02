@@ -27,12 +27,14 @@ from wandb.integration.ultralytics import add_wandb_callback
 
 
 def train(args):
-
     # Initialize a wandb run
     wandb.init(project="object-detection-bdd")
 
     # Create the model
     model = YOLO(args.start_weight_path)
+
+    # Register the wandb callback
+    add_wandb_callback(model, enable_model_checkpointing=True)
 
     cur_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     projet_name = f"BacteriaYoloV8_{cur_datetime}"
@@ -56,7 +58,6 @@ def train(args):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--data_file",
