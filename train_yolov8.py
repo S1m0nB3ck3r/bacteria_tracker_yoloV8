@@ -11,6 +11,8 @@ import os
 
 # External imports
 from ultralytics import YOLO
+import wandb
+from wandb.integration.ultralytics import add_wandb_callback
 
 # start_weight_path = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\best_from_Mehran.pt"
 # output_weight_path = (
@@ -22,6 +24,36 @@ from ultralytics import YOLO
 # project_path = (
 #     "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\test yolo v8\\result_train"
 # )
+
+
+def train(args):
+
+    # Initialize a wandb run
+    wandb.init(project="object-detection-bdd")
+
+    # Create the model
+    model = YOLO(args.start_weight_path)
+
+    cur_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    projet_name = f"BacteriaYoloV8_{cur_datetime}"
+
+    print("start training")
+    results = model.train(
+        model=args.start_weight_path,
+        data=args.data_file,
+        epochs=args.epochs,
+        batch=args.batch,
+        project=args.project_path,
+        name=projet_name,
+        verbose=True,
+        imgsz=args.imgsz,
+        max_det=args.max_det,
+        device=args.device,
+        workers=8,
+    )
+
+    print("finished")
+
 
 if __name__ == "__main__":
 
@@ -54,26 +86,4 @@ if __name__ == "__main__":
 
     if not os.path.exists(args.project_path):
         os.mkdir(args.project_path)
-
-    # Create the model
-    model = YOLO(args.start_weight_path)
-
-    cur_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    projet_name = f"BacteriaYoloV8_{cur_datetime}"
-
-    print("start training")
-    results = model.train(
-        model=args.start_weight_path,
-        data=args.data_file,
-        epochs=args.epochs,
-        batch=args.batch,
-        project=args.project_path,
-        name=projet_name,
-        verbose=True,
-        imgsz=args.imgsz,
-        max_det=args.max_det,
-        device=args.device,
-        workers=8,
-    )
-
-    print("finished")
+    train(args)
