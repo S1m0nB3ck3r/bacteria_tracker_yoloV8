@@ -64,7 +64,7 @@ if __name__ == "__main__":
         help="Path to the starting weight file",
     )
     parser.add_argument("--project_path", type=str, required=True)
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument(
         "--batch", type=int, default=-1
     )  # Default: -1 for autobatch size
