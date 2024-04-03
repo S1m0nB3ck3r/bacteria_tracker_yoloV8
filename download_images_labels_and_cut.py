@@ -21,19 +21,20 @@ def export(output_folder, API_KEY, project_id):
     Export the images and labels from a Labelbox project and save them to the specified output folder
     This script will also split the images into 256x256 tiles and save them to the output folder
     """
-    output_folder_256 = os.path.join(output_folder, "sub256")
-    output_folder_annot = os.path.join(output_folder, "annot")
-    isExist = os.path.exists(output_folder)
-    if not isExist:
-        os.makedirs(output_folder)
 
-    isExist = os.path.exists(output_folder_256)
-    if not isExist:
-        os.makedirs(output_folder_256)
+    output_folder_images = os.path.join(output_folder, "images")
+    output_folder_annotations = os.path.join(output_folder, "annotations")
+    output_folder_img256 = os.path.join(output_folder, "images256")
+    output_folder_annot256 = os.path.join(output_folder, "annot256")
 
-    isExist = os.path.exists(output_folder_annot)
-    if not isExist:
-        os.makedirs(output_folder_annot)
+    for folder in [
+        output_folder_images,
+        output_folder_annotations,
+        output_folder_img256,
+        output_folder_annot256,
+    ]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
     client = lb.Client(API_KEY)
 
@@ -41,30 +42,34 @@ def export(output_folder, API_KEY, project_id):
 
     labels = project.export_labels(download=True)
     # project.DataRow
-    save(labels)
+    save_dataset_json(output_folder, labels)
+
     for label in labels:
         img_url = label["Labeled Data"]
         image_filename = label["External ID"]
 
-        image_fullpath = os.path.join(output_folder, image_filename)
+        image_fullpath = os.path.join(output_folder_images, image_filename)
         if os.path.exists(image_fullpath):
             img = Image.open(image_fullpath)
         else:
             img = Image.open(urlopen(img_url))
+            print(f"Saving image to {image_fullpath}")
+            img.save(image_fullpath)
+
         bbox = img.size
         if bbox is None:
             print("Skipping '%s'" % image_filename)
             continue
         bbox = 0, 0, bbox[0], bbox[1]
-        if not os.path.exists(image_fullpath):
-            img.save(image_fullpath)
-        split_labels_to_txt_files(label, bbox, output_folder)
+
+        split_labels_to_txt_files(label, bbox, output_folder_images)
         if (bbox[2] > 256) or (bbox[3] > 256):
-            image_cutter(label, img, output_folder_256, output_folder_annot)
+            image_cutter(label, img, output_folder_img256, output_folder_annot256)
 
 
-def save(labels):
-    with open("labelbox_export.json", "w") as f:
+def save_dataset_json(output_folder, labels):
+    print("Saving labels to labelbox_export.json")
+    with open(os.path.join(output_folder, "labelbox_export.json"), "w") as f:
         json.dump(labels, f)
     print("done")
 
@@ -84,6 +89,7 @@ def split_labels_to_txt_files(data, ibox, out_folder):
     print(ibox)
 
     # Open the output file in write mode
+    print(f"Saving labels to {out_folder}/{output_filename}")
     with open(os.path.join(out_folder, output_filename), "w") as output_file:
         # Iterate over the objects in the label data
         for obj in data["Label"]["objects"]:
@@ -131,7 +137,7 @@ def image_cutter(data, img, output_path_sub, output_path_annot):
     # fh = float(ih)
 
     canvas = img.copy()
-    fnt = ImageFont.truetype("arial.ttf", 24)
+    # fnt = ImageFont.truetype("arial.ttf", 24)
     # fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 24)
     draw = ImageDraw.Draw(canvas)
     for i in range(0, ih, 256):
@@ -143,7 +149,7 @@ def image_cutter(data, img, output_path_sub, output_path_annot):
             draw.text(
                 (i + 10, j + 10),
                 "%d,%d" % (j // 256, i // 256),
-                font=fnt,
+                # font=fnt,
                 fill=(255, 0, 0),
             )
     bboxes = []
@@ -219,7 +225,7 @@ def image_cutter(data, img, output_path_sub, output_path_annot):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage : download_label_and_images_v2.py <download_dir> <split_dir")
         sys.exit(-1)
 
@@ -231,6 +237,7 @@ if __name__ == "__main__":
     # Extract the download folder and split folder from the command line arguments
     dl_folder = sys.argv[1]
     split_folder = sys.argv[2]
+    seed = 42
 
     export(dl_folder, API_KEY, project_id)
-    split_ds.splitds(dl_folder, split_folder)
+    split_ds.splitds(os.path.join(dl_folder, "images256"), split_folder, seed)
