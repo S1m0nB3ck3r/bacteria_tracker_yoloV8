@@ -17,7 +17,7 @@ from wandb.integration.ultralytics import add_wandb_callback
 
 def train(args):
     # Initialize a wandb run
-    log_wandb = args.wandb_project is not None and args.wand_entity is not None
+    log_wandb = args.wandb_project is not None and args.wandb_entity is not None
     if log_wandb:
         wandb.init(entity=args.wandb_entity, project=args.wandb_project)
 
