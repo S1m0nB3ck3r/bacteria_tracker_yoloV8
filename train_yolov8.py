@@ -55,6 +55,7 @@ if __name__ == "__main__":
         "--data_file",
         type=str,
         help="Path to the data yaml file for Yolo training",
+        required=True,
     )
     parser.add_argument(
         "--start_weight_path",
