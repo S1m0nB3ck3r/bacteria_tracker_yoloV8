@@ -1,7 +1,6 @@
 from ultralytics import YOLO
 from PIL import Image, ImageDraw, ImageFont
 import os
-import numpy as np
 from my_kalman import main_tracker
 
 
@@ -27,17 +26,15 @@ def save_image_with_bounding_boxes(save_dir, yolo_result):
 
     img = Image.open(result.path)
     canvas = img.copy()
-    fnt = ImageFont.truetype("arial.ttf", 24)
+    # fnt = ImageFont.truetype("arial.ttf", 24)
     # fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 24)
     draw = ImageDraw.Draw(canvas)
 
     bounding_boxes = yolo_result.boxes.cpu().xyxy.numpy()
 
     if bounding_boxes.size != 0:
-
         for bbox in bounding_boxes:
-
-            x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
+            # x, y, w, h = bbox[0], bbox[1], bbox[2], bbox[3]
 
             draw.rectangle(bbox, None, (0, 255, 0), 2)
 
