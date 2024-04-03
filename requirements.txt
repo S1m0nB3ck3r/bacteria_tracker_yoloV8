@@ -2,3 +2,4 @@ labelbox
 python-dotenv
 Pillow
 ultralytics
+scikit-learn
