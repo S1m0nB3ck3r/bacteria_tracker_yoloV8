@@ -1,15 +1,26 @@
 # coding: utf-8
 
+# Standard imports
+from urllib.request import urlopen
+import sys
+import os
+
+# External imports
+from dotenv import load_dotenv
 import labelbox as lb
 import json
-import os
 from PIL import Image, ImageDraw, ImageFont
-from urllib.request import urlopen
 from rectangles import Rectangle
+
+# Local imports
 import split_ds
 
 
 def export(output_folder, API_KEY, project_id):
+    """
+    Export the images and labels from a Labelbox project and save them to the specified output folder
+    This script will also split the images into 256x256 tiles and save them to the output folder
+    """
     output_folder_256 = os.path.join(output_folder, "sub256")
     output_folder_annot = os.path.join(output_folder, "annot")
     isExist = os.path.exists(output_folder)
@@ -207,14 +218,19 @@ def image_cutter(data, img, output_path_sub, output_path_annot):
 
 
 if __name__ == "__main__":
-    API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbHE2ZDV3bjUwOGxlMDcwN2NwbzYydGk3Iiwib3JnYW5pemF0aW9uSWQiOiJjbHE2ZDV3bXgwOGxkMDcwNzZyYWFmMDQwIiwiYXBpS2V5SWQiOiJjbHE2cWw3MXMwMDRrMDcxb2NwdTlkMHl1Iiwic2VjcmV0IjoiM2Y2YTQ0Nzk1YjQzYjJmNTY2Y2UzZjRkOTVjOTJiMGEiLCJpYXQiOjE3MDI2NTEyNDIsImV4cCI6MjMzMzgwMzI0Mn0.nUf1HSCzi2a1BE20h_To1g97DKTqRmliQvj3kCG8WE4"
-    project_id = "cls27b77i055407wj8c4y7qhn"
 
-    dl_folder = (
-        "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full_filtered"
-    )
-    split_folder = "C:\\TRAVAIL\\developpement\\bacteria_tracker-main\\dataset_full_filtered\\train_dataset_full_filtered"
+    if len(sys.argv) != 2:
+        print("Usage : download_label_and_images_v2.py <download_dir> <split_dir")
+        sys.exit(-1)
+
+    # Load the API key and project ID from the environment variables
+    load_dotenv()
+    API_KEY = os.getenv("API_KEY")
+    project_id = os.getenv("PROJECT_ID")
+
+    # Extract the download folder and split folder from the command line arguments
+    dl_folder = sys.argv[1]
+    split_folder = sys.argv[2]
 
     export(dl_folder, API_KEY, project_id)
-
     split_ds.splitds(dl_folder, split_folder)
