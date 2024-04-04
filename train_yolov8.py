@@ -59,6 +59,7 @@ def train(args):
         mixup=0.5,
         copy_paste=0.0,
         auto_augment="randaugment",
+        dropout=0.5,
         workers=8,
     )
 
