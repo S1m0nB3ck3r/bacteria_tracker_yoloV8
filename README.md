@@ -48,6 +48,12 @@ a peak GPU RAM usage of almost 8GB.
 You can use autobatch size by keeping the default `batch=-1` but this does not work if you use wandb. It will adapt the
 batch size as if wandb is not used but the use of wandb involves more the GPU RAM.
 
+If you want to log on the wandb during the training, you need to specify your wandb entity and project parameters in the command line :
+
+```
+python train_yolov8.py --project_path projects --data_file 2bacteria.yaml --batch 64 --start_weight_path yolov8n.pt ----wandb_entity university_of_lorraine --wandb_project BacteriaTracker 
+```
+
 
 ## Links
 
