@@ -26,7 +26,7 @@ def train(args):
 
     # Register the wandb callback
     if log_wandb:
-        add_wandb_callback(model, enable_model_checkpointing=True)
+        add_wandb_callback(model)
 
     cur_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     projet_name = f"BacteriaYoloV8_{cur_datetime}"
