@@ -4,3 +4,4 @@ Pillow
 ultralytics
 scikit-learn
 wandb
+sahi
