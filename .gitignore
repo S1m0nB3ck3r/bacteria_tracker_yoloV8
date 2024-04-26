@@ -1,1 +1,10 @@
 .env
+/bacteria_tracker_yolov8_env
+/Datasets
+/__pycache__
+/images_to_detect
+/plots
+/Result
+/Train
+/Wandb
+TUTO GIT.docx

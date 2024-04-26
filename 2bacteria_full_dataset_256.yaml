@@ -1,0 +1,8 @@
+path: D:/bacteria_tracker_yoloV8/full_dataset_256/
+train: images/train
+val: images/val
+test: images/test
+
+nc: 1
+
+names: ["bacteria"]
