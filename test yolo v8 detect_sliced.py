@@ -1,3 +1,4 @@
+import argparse
 from sahi.utils.yolov8 import download_yolov8s_model
 from sahi import AutoDetectionModel
 from sahi.utils.cv import read_image
@@ -18,10 +19,9 @@ def save_label(results, file_path):
             type = 0
             left = object.bbox.minx / result.image_width
             right = object.bbox.maxx / result.image_width
-            top = object.bbox.miny / result.image_height 
-            bottom = object.bbox.maxy / result.image_height 
+            top = object.bbox.miny / result.image_height
+            bottom = object.bbox.maxy / result.image_height
             file.write(f"{type} {left} {top} {right} {bottom}\n")
-
 
 
 def save_image_with_bounding_boxes(save_dir, yolo_result):
@@ -50,9 +50,15 @@ def save_image_with_bounding_boxes(save_dir, yolo_result):
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--detection_directory", type=str, required=True)
+    parser.add_argument("--weight_path", type=str, required=True)
+    parser.add_argument("--result_path", type=str, default="./result")
+    args = parser.parse_args()
+
     image_extension = "jpg"
 
-    detection_directory = r"C:\TRAVAIL\developpement\bacteria_tracker-main\images_to_detect"
+    detection_directory = args.detection_directory
 
     # Liste pour stocker les sous-répertoires
     detection_directories = []
@@ -65,13 +71,8 @@ if __name__ == "__main__":
         if os.path.isdir(path_dir):
             detection_directories.append(path_dir)
 
-    print(detection_directories)
-
-    weight_path = r"C:\TRAVAIL\developpement\bacteria_tracker_yoloV8\projects\BacteriaYoloV8_20240405_115217\weights\best.pt"
-    test_name = "result_05_04_2023_1st"
-    result_path = (
-        r"C:\TRAVAIL\developpement\bacteria_tracker_yoloV8\projects\BacteriaYoloV8_20240405_115217\\" + test_name
-    )
+    weight_path = args.weight_path
+    result_path = args.result_path
 
     if not os.path.exists(result_path):
         os.mkdir(result_path)
@@ -79,17 +80,21 @@ if __name__ == "__main__":
     # model = YOLO(weight_path)
 
     detection_model = AutoDetectionModel.from_pretrained(
-        model_type='yolov8',
+        model_type="yolov8",
         model_path=weight_path,
         confidence_threshold=0.3,
-        device='cuda:0'
+        device="cuda:0",
     )
 
     for film_dir in detection_directories:
 
         print("start detection " + film_dir)
 
-        images_path = [os.path.join(film_dir, f) for f in os.listdir(film_dir) if f.split(".")[-1]==image_extension]
+        images_path = [
+            os.path.join(film_dir, f)
+            for f in os.listdir(film_dir)
+            if f.split(".")[-1] == image_extension
+        ]
 
         for i, image_path in enumerate(images_path):
             result = get_sliced_prediction(
@@ -98,7 +103,8 @@ if __name__ == "__main__":
                 slice_height=256,
                 slice_width=256,
                 overlap_height_ratio=0.2,
-                overlap_width_ratio=0.2
+                overlap_width_ratio=0.2,
+                auto_slice_resolution=False,
             )
 
             exp_dir = os.path.join(result_path, os.path.split(film_dir)[-1])
@@ -119,7 +125,12 @@ if __name__ == "__main__":
             if not os.path.isdir(os.path.join(path_result_images_filtered, "images")):
                 os.mkdir(os.path.join(path_result_images_filtered, "images"))
 
-            result.export_visuals(export_dir = exp_dir, file_name=str(i)+".jpg", hide_conf=True, hide_labels=True)
+            result.export_visuals(
+                export_dir=exp_dir,
+                file_name=str(i) + ".jpg",
+                hide_conf=True,
+                hide_labels=True,
+            )
 
             objects = result.object_prediction_list
 
