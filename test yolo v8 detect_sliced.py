@@ -96,6 +96,25 @@ if __name__ == "__main__":
             if f.split(".")[-1] == image_extension
         ]
 
+        exp_dir = os.path.join(result_path, os.path.split(film_dir)[-1])
+        if not os.path.exists(exp_dir):
+            os.mkdir(exp_dir)
+        print(f"Will save the results into {exp_dir}")
+
+        path_result_label = os.path.join(exp_dir, "labels")
+        if not os.path.exists(path_result_label):
+            os.mkdir(path_result_label)
+
+        path_result_images_filtered = os.path.join(exp_dir, "filtered")
+        if not os.path.exists(path_result_images_filtered):
+            os.mkdir(path_result_images_filtered)
+
+        if not os.path.exists(path_result_images_filtered + "\\data"):
+            os.mkdir(path_result_images_filtered + "\\data")
+
+        if not os.path.isdir(os.path.join(path_result_images_filtered, "images")):
+            os.mkdir(os.path.join(path_result_images_filtered, "images"))
+
         for i, image_path in enumerate(images_path):
             result = get_sliced_prediction(
                 image_path,
@@ -106,24 +125,6 @@ if __name__ == "__main__":
                 overlap_width_ratio=0.2,
                 auto_slice_resolution=False,
             )
-
-            exp_dir = os.path.join(result_path, os.path.split(film_dir)[-1])
-            if not os.path.exists(exp_dir):
-                os.mkdir(exp_dir)
-
-            path_result_label = os.path.join(exp_dir, "labels")
-            if not os.path.exists(path_result_label):
-                os.mkdir(path_result_label)
-
-            path_result_images_filtered = os.path.join(exp_dir, "filtered")
-            if not os.path.exists(path_result_images_filtered):
-                os.mkdir(path_result_images_filtered)
-
-            if not os.path.exists(path_result_images_filtered + "\\data"):
-                os.mkdir(path_result_images_filtered + "\\data")
-
-            if not os.path.isdir(os.path.join(path_result_images_filtered, "images")):
-                os.mkdir(os.path.join(path_result_images_filtered, "images"))
 
             result.export_visuals(
                 export_dir=exp_dir,
