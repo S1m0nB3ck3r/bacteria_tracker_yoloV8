@@ -64,9 +64,9 @@ if __name__ == "__main__":
     detection_directories = []
 
     # Parcours de tous les éléments du répertoire parent
-    for dir in os.listdir(detection_directory):
+    for ddir in os.listdir(detection_directory):
         # Chemin complet de l'élément
-        path_dir = os.path.join(detection_directory, dir)
+        path_dir = os.path.join(detection_directory, ddir)
         # Vérification si l'élément est un répertoire
         if os.path.isdir(path_dir):
             detection_directories.append(path_dir)
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
             objects = result.object_prediction_list
 
-            print("nb bacteries" + str(len(objects)))
+            print("nb bacteries : " + str(len(objects)))
             image_name_without_extension = image_path.split("\\")[-1].split(".")[0]
             image_extension = image_path.split(".")[-1]
             label_save_path = os.path.join(
